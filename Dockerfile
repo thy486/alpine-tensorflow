@@ -7,7 +7,6 @@ FROM alpine:3.13
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
 ENV JAVA_HOME /usr/lib/jvm/java-10-openjdk
-ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.24.1
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -34,7 +33,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         swig \
         zip \
     && cd /tmp \
-    && pip3 install --no-cache-dir wheel \
+    && pip3 install -U --user pip numpy wheel \
+    && pip3 install -U --user keras_preprocessing --no-deps \
     && $(cd /usr/bin && ln -s python3 python)
 
 # Bazel download
@@ -44,7 +44,7 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
 
 # Bazel install
 RUN cd bazel-${BAZEL_VERSION} \
-    && sed -i -e 's/-classpath/-J-Xmx2048m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
+    && sed -i -e 's/-classpath/-J-Xmx4096m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
     && bash compile.sh \
     && cp -p output/bazel /usr/bin/
 
@@ -75,7 +75,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         TF_NEED_MPI=0 \
         bash configure
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-    && bazel build -c opt --config=v1 --config=mkl --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+    && bazel build --config=mkl -c opt //tensorflow/tools/pip_package:build_pip_package
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
