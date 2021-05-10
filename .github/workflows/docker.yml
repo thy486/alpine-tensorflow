@@ -66,5 +66,5 @@ jobs:
       - 
         uses: actions/upload-artifact@v2
         with:
-         name: my-artifact
-         path: /root/tensorflow-*-cp38-cp38m-linux_x86_64.whl
+         name: tensorflow-2.4.1-cp38-cp38m-${{ steps.prepare.outputs.docker_platforms }}.whl
+         path: /root/tensorflow-2.4.1-cp38-cp38m-linux_x86_64.whl
