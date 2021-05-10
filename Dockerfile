@@ -19,6 +19,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         libjpeg-turbo-dev \
         libpng-dev \
         linux-headers \
+        gfortran \
         make \
         musl-dev \
         openblas-dev \
@@ -26,7 +27,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         patch \
         perl \
         python3-dev \
-        py-numpy-dev \
+        py-numpy@community \
         rsync \
         sed \
         swig \
