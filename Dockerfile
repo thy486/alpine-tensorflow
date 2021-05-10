@@ -27,6 +27,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         patch \
         perl \
         python3-dev \
+        py3-pip \
+        py3-numpy \
         rsync \
         sed \
         swig \
