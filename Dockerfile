@@ -60,8 +60,8 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
     && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
-    && PYTHON_BIN_PATH=/usr/bin/python \
-        PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
+    && PYTHON_BIN_PATH=/usr/bin/python3 \
+        PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
         TF_NEED_GCP=0 \
@@ -75,7 +75,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         TF_NEED_MPI=0 \
         bash configure
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-    && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+    && bazel build -c opt --config=mkl --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
