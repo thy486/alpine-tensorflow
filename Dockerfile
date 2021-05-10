@@ -6,7 +6,7 @@ FROM alpine:3.13
 # - Add -Xmx to the Java params when building Bazel
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
-ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 3.6.0
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
@@ -23,7 +23,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         make \
         musl-dev \
         openblas-dev \
-        openjdk8 \
+        openjdk11 \
         patch \
         perl \
         python3-dev \
