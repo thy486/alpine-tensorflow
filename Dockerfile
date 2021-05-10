@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.13
 
 # Based on https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile
 # Changes:
@@ -8,7 +8,7 @@ FROM alpine:3.7
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
-ENV BAZEL_VERSION 0.10.0
+ENV BAZEL_VERSION 4.0.0
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
@@ -47,7 +47,7 @@ RUN cd bazel-${BAZEL_VERSION} \
     && cp -p output/bazel /usr/bin/
 
 # Download Tensorflow
-ENV TENSORFLOW_VERSION 1.7.0
+ENV TENSORFLOW_VERSION 2.4.1
 RUN cd /tmp \
     && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf -
