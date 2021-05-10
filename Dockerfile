@@ -9,7 +9,7 @@ FROM alpine:3.13
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 3.6.0
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
@@ -27,8 +27,6 @@ RUN apk add --no-cache --virtual=.build-deps \
         patch \
         perl \
         python3-dev \
-        py3-pip \
-        py3-numpy \
         rsync \
         sed \
         swig \
