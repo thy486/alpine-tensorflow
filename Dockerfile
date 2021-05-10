@@ -6,7 +6,7 @@ FROM alpine:3.13
 # - Add -Xmx to the Java params when building Bazel
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
-ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 3.5.0
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
@@ -23,7 +23,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         make \
         musl-dev \
         openblas-dev \
-        openjdk8 \
+        openjdk11 \
         patch \
         perl \
         python3-dev \
@@ -49,7 +49,7 @@ RUN cd bazel-${BAZEL_VERSION} \
     && cp -p output/bazel /usr/bin/
 
 # Download Tensorflow
-ENV TENSORFLOW_VERSION 2.4.1
+ENV TENSORFLOW_VERSION 1.15.5
 RUN cd /tmp \
     && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf -
@@ -75,7 +75,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         TF_NEED_MPI=0 \
         bash configure
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-    && bazel build -c opt --config=mkl --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+    && bazel build -c opt --config=v1 --config=mkl --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
