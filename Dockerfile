@@ -59,7 +59,9 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
 # Bazel install
 ENV EXTRA_BAZEL_ARGS="--host_javabase=@local_jdk//:jdk"
 RUN cd bazel-${BAZEL_VERSION} \
-        # && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
+        && wget https://raw.githubusercontent.com/clearlinux-pkgs/tensorflow/master/Add-grpc-fix-for-gettid.patch \
+        && patch -p1 <Add-grpc-fix-for-gettid.patch \
+        && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
         && bash compile.sh \
         && cp -p output/bazel /usr/bin/
 
