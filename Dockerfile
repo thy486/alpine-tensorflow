@@ -11,7 +11,7 @@ ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
 
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
+RUN apk add --no-cache build-dependencies build-base python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
@@ -28,11 +28,10 @@ RUN apk add --no-cache --virtual=.build-deps \
         openjdk8 \
         patch \
         perl \
-        build-dependencies \
-        build-base \
         alpine-sdk \
         python3-dev \
-        libffi-dev openssl-dev \
+        openssl-dev \
+        libffi-dev \
         py3-numpy-dev \
         rsync \
         sed \
