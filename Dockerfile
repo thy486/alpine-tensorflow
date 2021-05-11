@@ -28,7 +28,11 @@ RUN apk add --no-cache --virtual=.build-deps \
         openjdk8 \
         patch \
         perl \
+        build-dependencies \
+        build-base \
+        alpine-sdk \
         python3-dev \
+        libffi-dev openssl-dev \
         py3-numpy-dev \
         rsync \
         sed \
@@ -54,8 +58,9 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
         && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip
 
 # Bazel install
+ENV EXTRA_BAZEL_ARGS="--host_javabase=@local_jdk//:jdk"
 RUN cd bazel-${BAZEL_VERSION} \
-        && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
+        # && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
         && bash compile.sh \
         && cp -p output/bazel /usr/bin/
 
