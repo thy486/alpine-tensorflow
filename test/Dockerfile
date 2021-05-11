@@ -29,11 +29,14 @@ RUN apk add --no-cache --virtual=.build-deps \
         perl \
         python3-dev \
         py3-numpy-dev \
+        py3-pip \
         rsync \
         sed \
         swig \
         zip \
         && cd /tmp \
+        && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+        && sudo python3 get-pip.py \
         && apk --no-cache add \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5 \
