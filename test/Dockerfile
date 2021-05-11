@@ -8,7 +8,7 @@ FROM alpine:3.12
 
 ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.26.0
-ENV TENSORFLOW_VERSION 1.15.0
+ENV TENSORFLOW_VERSION 1.15.5
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -45,10 +45,10 @@ RUN apk add --no-cache --virtual=.build-deps \
         && apk --no-cache add --virtual .builddeps.edge \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5-dev \
-        && pip3 install h5py \
+        && pip3 install h5py==2.9.0 \
         && pip3 install --no-cache-dir wheel \
-        && pip3 install keras_applications --no-deps \
-        && pip3 install keras_preprocessing --no-deps \
+        # && pip3 install keras_applications --no-deps \
+        # && pip3 install keras_preprocessing --no-deps \
         # && pip3 install h5py==2.8.0 \
         && $(cd /usr/bin && ln -s python3 python)
 
