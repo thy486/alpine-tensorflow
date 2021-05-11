@@ -37,7 +37,6 @@ RUN apk add --no-cache --virtual=.build-deps \
     && pip3 install --no-cache-dir wheel \
     && pip3 install keras_applications --no-deps \
     && pip3 install keras_preprocessing --no-deps \
-    && pip3 install -U --user pip numpy wheel \
     && $(cd /usr/bin && ln -s python3 python)
 
 # Bazel download
