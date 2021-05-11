@@ -47,7 +47,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         && apk --no-cache add --virtual .builddeps.edge \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5-dev \
-        && pip3 install h5py \
+        && pip3 install six mock numpy h5py grpcio \
         && pip3 install --no-cache-dir wheel \
         && pip3 install keras_applications keras_preprocessing --no-deps \
         # && pip3 install h5py==2.8.0 \
@@ -64,7 +64,6 @@ RUN cd bazel-${BAZEL_VERSION} \
         # && wget https://raw.githubusercontent.com/clearlinux-pkgs/tensorflow/master/Add-grpc-fix-for-gettid.patch \
         # && patch -p1 <Add-grpc-fix-for-gettid.patch \
         # && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
-        && tmux \
         && bash compile.sh \
         && sudo cp -p output/bazel /usr/bin/
 
