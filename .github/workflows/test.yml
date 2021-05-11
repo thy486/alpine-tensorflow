@@ -33,5 +33,9 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           docker buildx build --build-arg BUILD_PLATFORM="linux-amd64" --output "type=image,push=true" --platform=linux/amd64 --tag ${{ secrets.DOCKER_USERNAME }}/alpine-tensorflow:latest ./
-          docker buildx build --build-arg BUILD_PLATFORM="linux-arm64" --output "type=image,push=true" --platform=linux/arm64 --tag ${{ secrets.DOCKER_USERNAME }}/alpine-tensorflow:latest ./
+      - 
+        uses: actions/upload-artifact@v2
+        with:
+         name: tensorflow-2.4.1-cp38-cp38m-linux_x86_64.whl
+         path: /root/tensorflow-2.4.1-cp38-cp38m-linux_x86_64.whl
       
