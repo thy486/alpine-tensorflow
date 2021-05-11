@@ -1,8 +1,8 @@
 name: Publish Docker Image
 on:
-  push:
-    tags:
-      - v*
+#  schedule:
+#    - cron: '0 10 * * *' # everyday at 10am
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,8 +12,6 @@ jobs:
 
       - name: Checkout base
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
