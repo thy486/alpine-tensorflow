@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM alpine:3.8
 
 # Based on https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile
 # Changes:
@@ -7,16 +7,17 @@ FROM alpine:3.13
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-ENV BAZEL_VERSION 0.24.1
+ENV LOCAL_RESOURCES 2048,.5,1.0
+ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
+
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
         curl \
         freetype-dev \
         g++ \
-        gcc \
         libjpeg-turbo-dev \
         libpng-dev \
         linux-headers \
@@ -27,15 +28,24 @@ RUN apk add --no-cache --virtual=.build-deps \
         patch \
         perl \
         python3-dev \
-        py3-pip \
         py3-numpy-dev \
         rsync \
         sed \
         swig \
         zip \
-    && cd /tmp \
-    && pip3 install --no-cache-dir wheel \
-    && $(cd /usr/bin && ln -s python3 python)
+        && cd /tmp \
+        && apk --no-cache add \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        hdf5 \
+        && apk --no-cache add --virtual .builddeps.edge \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        hdf5-dev \
+        && pip3 install h5py \
+        && pip3 install --no-cache-dir wheel \
+        && pip3 install keras_applications==1.0.5 --no-deps \
+        && pip3 install keras_preprocessing==1.0.3 --no-deps \
+        # && pip3 install h5py==2.8.0 \
+        && $(cd /usr/bin && ln -s python3 python)
 
 # Bazel download
 RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
@@ -60,7 +70,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
         && PYTHON_BIN_PATH=/usr/bin/python \
-        PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
+        PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
         TF_NEED_GCP=0 \
@@ -74,12 +84,12 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         TF_NEED_MPI=0 \
         bash configure
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-            && bazel --config=mkl -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+        && bazel build  --config=mkl -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
+RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl /root
 
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
+RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl \
         && python3 -c 'import tensorflow'
