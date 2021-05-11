@@ -40,7 +40,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         zip \
         && apk add --virtual build-dependencies\
         && cd /tmp \
-        && pip3 install six mock numpy grpcio \
+        && pip3 install six mock grpcio \
+        #numpy
         && pip3 install --no-cache-dir wheel \
         && pip3 install keras_applications keras_preprocessing --no-deps \
         # && pip3 install h5py==2.8.0 \
@@ -52,7 +53,7 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
         && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip
 
 # Bazel install
-ENV EXTRA_BAZEL_ARGS="--host_javabase=@local_jdk//:jdk"
+# ENV EXTRA_BAZEL_ARGS="--host_javabase=@local_jdk//:jdk"
 RUN cd bazel-${BAZEL_VERSION} \
         # && wget https://raw.githubusercontent.com/clearlinux-pkgs/tensorflow/master/Add-grpc-fix-for-gettid.patch \
         # && patch -p1 <Add-grpc-fix-for-gettid.patch \
