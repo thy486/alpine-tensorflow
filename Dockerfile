@@ -35,8 +35,8 @@ RUN apk add --no-cache --virtual=.build-deps \
     && cd /tmp \
     && pip3 install h5py \
     && pip3 install --no-cache-dir wheel \
-    && pip3 install keras_applications --no-deps \
-    && pip3 install keras_preprocessing --no-deps \
+    # && pip3 install keras_applications --no-deps \
+    # && pip3 install keras_preprocessing --no-deps \
     && $(cd /usr/bin && ln -s python3 python)
 
 # Bazel download
