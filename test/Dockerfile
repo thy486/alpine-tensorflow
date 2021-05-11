@@ -33,6 +33,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         rsync \
         sed \
         swig \
+        sudo \
         zip \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
