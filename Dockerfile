@@ -47,8 +47,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         hdf5-dev \
         && pip3 install h5py \
         && pip3 install --no-cache-dir wheel \
-        && pip3 install keras_applications==1.0.5 --no-deps \
-        && pip3 install keras_preprocessing==1.0.3 --no-deps \
+        && pip3 install keras_applications keras_preprocessing --no-deps \
         # && pip3 install h5py==2.8.0 \
         && $(cd /usr/bin && ln -s python3 python)
 
