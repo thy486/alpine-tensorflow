@@ -33,7 +33,6 @@ RUN apk add --no-cache --virtual=.build-deps \
         swig \
         zip \
     && cd /tmp \
-    && pip3 install h5py \
     && pip3 install --no-cache-dir wheel \
     && $(cd /usr/bin && ln -s python3 python)
 
