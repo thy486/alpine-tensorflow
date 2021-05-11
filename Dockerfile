@@ -40,7 +40,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         zip \
         && apk add --virtual build-dependencies\
         && cd /tmp \
-        && pip3 install six mock grpcio \
+        # && pip3 install six mock grpcio \
         #numpy
         && pip3 install --no-cache-dir wheel \
         && pip3 install keras_applications keras_preprocessing --no-deps \
