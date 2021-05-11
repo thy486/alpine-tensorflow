@@ -1,10 +1,15 @@
-FROM python:3.7-alpine
+FROM alpine:3.12
+
+# Based on https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile
+# Changes:
+# - Bumping versions of Bazel and Tensorflow
+# - Add -Xmx to the Java params when building Bazel
+# - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
-
 ENV BAZEL_VERSION 0.25.0
-ENV TENSORFLOW_VERSION 1.15.5
+ENV TENSORFLOW_VERSION 1.15.0
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -28,34 +33,44 @@ RUN apk add --no-cache --virtual=.build-deps \
         sed \
         swig \
         zip \
-    && : prepare for building TensorFlow \
-    && : install wheel python module \
-    && cd /tmp \
-    && pip3 install --no-cache-dir wheel \
-    && : \
-    && : add python symlink to avoid python detection error \
-    && $(cd /usr/bin && ln -s python3 python) \
-    && : install Bazel to build TensorFlow \
-    && curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
-    && mkdir bazel-${BAZEL_VERSION} \
-    && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip \
-    && cd bazel-${BAZEL_VERSION} \
-    && : add -fpermissive compiler option to avoid compilation failure \
-    && sed -i -e '/"-std=c++0x"/{h;s//"-fpermissive"/;x;G}' tools/cpp/cc_configure.bzl \
-    && : add '#include <sys/stat.h>' to avoid mode_t type error \
-    && sed -i -e '/#endif  \/\/ COMPILER_MSVC/{h;s//#else/;G;s//#include <sys\/stat.h>/;G;}' third_party/ijar/common.h \
-    && bash compile.sh \
-    && cp -p output/bazel /usr/bin/ \
-    && : \
-    && : build TensorFlow pip package \
-    && cd /tmp \
-    && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
-        | tar xzf - \
-    && cd tensorflow-${TENSORFLOW_VERSION} \
-    && : musl-libc does not have "secure_getenv" function \
-    && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
-    && PYTHON_BIN_PATH=/usr/bin/python \
-        PYTHON_LIB_PATH=/usr/lib/python3.7/site-packages \
+        && cd /tmp \
+        && apk --no-cache add \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        hdf5 \
+        && apk --no-cache add --virtual .builddeps.edge \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        hdf5-dev \
+        && pip3 install h5py \
+        && pip3 install --no-cache-dir wheel \
+        && pip3 install keras_applications --no-deps \
+        && pip3 install keras_preprocessing --no-deps \
+        # && pip3 install h5py==2.8.0 \
+        && $(cd /usr/bin && ln -s python3 python)
+
+# Bazel download
+RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
+        && mkdir bazel-${BAZEL_VERSION} \
+        && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip
+
+# Bazel install
+RUN cd bazel-${BAZEL_VERSION} \
+        && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
+        && bash compile.sh \
+        && cp -p output/bazel /usr/bin/
+
+# Download Tensorflow
+RUN cd /tmp \
+        && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
+        | tar xzf -
+
+# Build Tensorflow
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+        && : musl-libc does not have "secure_getenv" function \
+        && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
+        && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
+        && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
+        && PYTHON_BIN_PATH=/usr/bin/python \
+        PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
         TF_NEED_GCP=0 \
@@ -67,31 +82,14 @@ RUN apk add --no-cache --virtual=.build-deps \
         TF_NEED_OPENCL=0 \
         TF_NEED_CUDA=0 \
         TF_NEED_MPI=0 \
-        bash configure \
-    && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package \
-    && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
-    && : \
-    && : install python modules including TensorFlow \
-    && cd \
-    && pip3 install --no-cache-dir /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl \
-    && pip3 install --no-cache-dir pandas scipy jupyter \
-    && pip3 install --no-cache-dir scikit-learn matplotlib Pillow \
-    && pip3 install --no-cache-dir google-api-python-client \
-    && : \
-    && : clean up unneeded packages and files \
-    && apk del .build-deps \
-    && rm -f /usr/bin/bazel \
-    && rm -rf /tmp/* /root/.cache
+        bash configure
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+        && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+ENV LOCAL_RESOURCES 7500,.5,1.0
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+        && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl /root
 
-RUN jupyter notebook --generate-config --allow-root \
-    && sed -i -e "/c\.NotebookApp\.ip/a c.NotebookApp.ip = '*'" \
-        -e "/c\.NotebookApp\.open_browser/a c.NotebookApp.open_browser = False" \
-            /root/.jupyter/jupyter_notebook_config.py
-RUN ipython profile create \
-    && sed -i -e "/c\.InteractiveShellApp\.matplotlib/a c.InteractiveShellApp.matplotlib = 'inline'" \
-            /root/.ipython/profile_default/ipython_kernel_config.py
-
-ADD init.sh /usr/local/bin/init.sh
-RUN chmod u+x /usr/local/bin/init.sh
-EXPOSE 8888
-CMD ["/usr/local/bin/init.sh"]
+# Make sure it's built properly
+RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl \
+        && python3 -c 'import tensorflow'
