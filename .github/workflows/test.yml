@@ -30,7 +30,7 @@ jobs:
       - name: Docker buildx image and push on master branch
         if: github.ref == 'refs/heads/master'
         run: |
-          docker buildx build --build-arg BUILD_PLATFORM="linux-amd64" --output "type=image,push=true" --platform=linux/amd64 --tag ${{ secrets.DOCKER_USERNAME }}/alpine-tensorflow:latest ./
+          docker buildx build --build-arg BUILD_PLATFORM="linux-amd64" --output "type=image,push=true" --platform=linux/amd64 --tag ${{ secrets.DOCKER_USERNAME }}/alpine-tensorflow:latest ./test/
       - 
         uses: actions/upload-artifact@v2
         with:
