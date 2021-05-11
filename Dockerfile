@@ -6,7 +6,7 @@ FROM python:3.7-alpine
 # - Add -Xmx to the Java params when building Bazel
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
@@ -25,7 +25,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         make \
         musl-dev \
         openblas-dev \
-        openjdk11 \
+        openjdk8 \
         patch \
         perl \
         alpine-sdk \
