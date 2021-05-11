@@ -35,6 +35,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         py3-numpy-dev \
         rsync \
         sed \
+        sudo \
+        tmux \
         swig \
         zip \
         && apk add --virtual build-dependencies\
@@ -59,11 +61,12 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
 # Bazel install
 ENV EXTRA_BAZEL_ARGS="--host_javabase=@local_jdk//:jdk"
 RUN cd bazel-${BAZEL_VERSION} \
-        && wget https://raw.githubusercontent.com/clearlinux-pkgs/tensorflow/master/Add-grpc-fix-for-gettid.patch \
-        && patch -p1 <Add-grpc-fix-for-gettid.patch \
-        && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
+        # && wget https://raw.githubusercontent.com/clearlinux-pkgs/tensorflow/master/Add-grpc-fix-for-gettid.patch \
+        # && patch -p1 <Add-grpc-fix-for-gettid.patch \
+        # && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
+        && tmux \
         && bash compile.sh \
-        && cp -p output/bazel /usr/bin/
+        && sudo cp -p output/bazel /usr/bin/
 
 # Download Tensorflow
 RUN cd /tmp \
@@ -77,7 +80,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
         && PYTHON_BIN_PATH=/usr/bin/python \
-        PYTHON_LIB_PATH=/usr/lib/python3.6/site-packages \
+        PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
         TF_NEED_GCP=0 \
