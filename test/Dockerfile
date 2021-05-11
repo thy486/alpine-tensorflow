@@ -77,7 +77,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         # && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
         # && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         # && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
-        && PYTHON_BIN_PATH=/usr/bin/python3 \
+        && PYTHON_BIN_PATH=/usr/bin/python \
         PYTHON_LIB_PATH=/usr/lib/python3.7/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
