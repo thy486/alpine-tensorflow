@@ -18,6 +18,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         curl \
         freetype-dev \
         g++ \
+        gcc \
         libjpeg-turbo-dev \
         libpng-dev \
         linux-headers \
