@@ -72,7 +72,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
         && PYTHON_BIN_PATH=/usr/bin/python \
-        PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
+        PYTHON_LIB_PATH=/usr/lib/python3.7/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
         TF_NEED_GCP=0 \
@@ -90,8 +90,8 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl /root
+RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl /root
 
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl \
+RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl \
         && python3 -c 'import tensorflow'
