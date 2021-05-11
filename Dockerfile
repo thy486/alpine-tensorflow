@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM python:3.7-alpine
 
 # Based on https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile
 # Changes:
@@ -11,7 +11,7 @@ ENV LOCAL_RESOURCES 2048,.5,1.0
 ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
 
-RUN apk add --no-cache build-base python3 python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
+RUN apk add --no-cache build-base python3-tkinter py3-numpy py3-pip py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         cmake \
@@ -36,18 +36,11 @@ RUN apk add --no-cache --virtual=.build-deps \
         rsync \
         sed \
         sudo \
-        tmux \
         swig \
         zip \
         && apk add --virtual build-dependencies\
         && cd /tmp \
-        && apk --no-cache add \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-        hdf5 \
-        && apk --no-cache add --virtual .builddeps.edge \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-        hdf5-dev \
-        && pip3 install six mock numpy h5py grpcio \
+        && pip3 install six mock numpy grpcio \
         && pip3 install --no-cache-dir wheel \
         && pip3 install keras_applications keras_preprocessing --no-deps \
         # && pip3 install h5py==2.8.0 \
