@@ -64,6 +64,7 @@ RUN cd bazel-${BAZEL_VERSION} \
         && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
         && bash compile.sh \
         && cp -p output/bazel /usr/local/bin/
+        && cp -p output/bazel /usr/bin/
 
 # Download Tensorflow
 RUN cd /tmp \
@@ -76,7 +77,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         # && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
         # && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         # && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
-        && PYTHON_BIN_PATH=/usr/local/bin/python3 \
+        && PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.7/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_JEMALLOC=1 \
