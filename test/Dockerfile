@@ -45,6 +45,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         && apk --no-cache add --virtual .builddeps.edge \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5-dev \
+        && rm -rf /var/cache/apk/* \
         && pip3 install -U --user keras_preprocessing --no-deps \
         && pip3 install keras_applications --no-deps \
         && pip3 install -U --user numpy \
