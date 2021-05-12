@@ -95,7 +95,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         # TF_NEED_OPENCL=0 \
         TF_ENABLE_XLA=0 \
         TF_NEED_OPENCL_SYCL=0 \
-        TF_NEED_ROCM=1 \
+        TF_NEED_ROCM=0 \
         TF_NEED_CUDA=0 \
         TF_DOWNLOAD_CLANG=0 \
         TF_NEED_MPI=0 \
@@ -103,7 +103,7 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         bash configure
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && bazel build \
-        # --config=mkl \
+        --config=mkl \
         -c opt --local_resources ${LOCAL_RESOURCES} --verbose_failures //tensorflow/tools/pip_package:build_pip_package
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
