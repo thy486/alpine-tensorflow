@@ -7,7 +7,7 @@ FROM alpine:3.12
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
 ENV LOCAL_RESOURCES 2048,.5,1.0
-ENV BAZEL_VERSION 0.26.0
+ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git
