@@ -103,7 +103,7 @@ RUN cd /tmp \
         && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && bazel build \
         --verbose_failures \
-        --config=mkl \
+        # --config=mkl \
         -c opt \
         --local_resources ${LOCAL_RESOURCES} \
         --config=v1 //tensorflow/tools/pip_package:build_pip_package
