@@ -113,5 +113,5 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
 RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
 
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl \
+RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
         && python3 -c 'import tensorflow'
