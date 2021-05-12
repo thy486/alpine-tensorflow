@@ -7,6 +7,7 @@ FROM alpine:3.12
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
 ENV LOCAL_RESOURCES 2048,.5,1.0
+ENV JAVA_HOME /usr/lib/jvm/default-jvm
 ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
 
@@ -54,15 +55,12 @@ RUN apk add --no-cache --virtual=.build-deps \
         # && pip3 install h5py==2.8.0 \
         && $(cd /usr/bin && ln -s python3 python)
 
-# Bazel download
+# Bazel download and install
+ENV EXTRA_BAZEL_ARGS --host_javabase=@local_jdk//:jdk
 RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
         && mkdir bazel-${BAZEL_VERSION} \
-        && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip
-
-# Bazel install
-ENV JAVA_HOME /usr/lib/jvm/default-jvm
-ENV EXTRA_BAZEL_ARGS --host_javabase=@local_jdk//:jdk
-RUN cd bazel-${BAZEL_VERSION} \
+        && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip \
+        && cd bazel-${BAZEL_VERSION} \
         && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
         && bash compile.sh \
         && cp -p output/bazel /usr/local/bin/ \
@@ -73,8 +71,11 @@ RUN cd /tmp \
         && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf -
 
-# Build Tensorflow
-RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+# Download and Build Tensorflow
+RUN cd /tmp \
+        && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
+        | tar xzf - \
+        && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && : musl-libc does not have "secure_getenv" function \
         && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
         && sed -i -e '/#include <execinfo.h>/d' tensorflow/core/platform/default/stacktrace.h \
@@ -98,14 +99,15 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         TF_DOWNLOAD_CLANG=0 \
         TF_NEED_MPI=0 \
         TF_SET_ANDROID_WORKSPACE=0 \
-        bash configure
-RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+        bash configure \
+        && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && bazel build \
         --verbose_failures \
         --config=mkl \
         -c opt \
         --local_resources ${LOCAL_RESOURCES} \
         --config=v1 //tensorflow/tools/pip_package:build_pip_package
+
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
