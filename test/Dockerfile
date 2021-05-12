@@ -74,15 +74,17 @@ RUN cd /tmp \
         && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf -
 
+# Change Build args
+RUN RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+        && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazelv \
+        && sed -n '478p' configure.py | grep 'bazel' | grep 'batch' &&  sed -i "478c \      \[\'baze l\', \'shutdown\', \'--bazelrc=/dev/null\', \'version\'\]\)" configure.py
+
 # Build Tensorflow
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         # && : musl-libc does not have "secure_getenv" function \
         # && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
         # && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         # && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
-        && : \
-        && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel\
-        && sed -n '478p' configure.py | grep 'bazel' | grep 'batch' &&  sed -i "478c \      \[\'bazel\', \'shutdown\', \'--bazelrc=/dev/null\', \'version\'\]\)" configure.py \
         && PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
