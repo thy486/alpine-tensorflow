@@ -91,13 +91,13 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         TF_NEED_CUDA=0 \
         TF_NEED_MPI=0 \
         bash configure
-RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-        && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
-ENV LOCAL_RESOURCES 7500,.5,1.0
-RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-        && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl /root
+# RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+#         && bazel build -c opt --local_resources ${LOCAL_RESOURCES} //tensorflow/tools/pip_package:build_pip_package
+# ENV LOCAL_RESOURCES 7500,.5,1.0
+# RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+#         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+# RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl /root
 
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl \
-        && python3 -c 'import tensorflow'
+# RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp37-cp37m-linux_x86_64.whl \
+#         && python3 -c 'import tensorflow'

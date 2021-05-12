@@ -63,8 +63,8 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }}
-      - 
-        uses: actions/upload-artifact@v2
-        with:
-         name: tensorflow-2.4.1-cp38-cp38m-${{ steps.prepare.outputs.docker_platforms }}.whl
-         path: /root/tensorflow-2.4.1-cp38-cp38m-linux_x86_64.whl
+      # - 
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #    name: tensorflow-2.4.1-cp38-cp38m-${{ steps.prepare.outputs.docker_platforms }}.whl
+      #    path: /root/tensorflow-2.4.1-cp38-cp38m-linux_x86_64.whl
