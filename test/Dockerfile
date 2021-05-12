@@ -11,7 +11,7 @@ ENV JAVA_HOME /usr/lib/jvm/default-jvm
 ENV BAZEL_VERSION 0.25.0
 ENV TENSORFLOW_VERSION 1.15.5
 
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         coreutils \
@@ -37,6 +37,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         swig \
         sudo \
         zip \
+        libexecinfo libexecinfo-dev \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
         && sudo python3 get-pip.py \
@@ -75,9 +76,10 @@ RUN cd /tmp \
 RUN cd /tmp \
         && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf - \
+        && echo "#undef LIBC_HAS_BACKTRACE_FUNC" > /usr/include/execinfo.h \
         && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && : musl-libc does not have "secure_getenv" function \
-        && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
+        # && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
         # && sed -i -e '/#include <execinfo.h>/d' tensorflow/core/platform/default/stacktrace.h \
         # && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
         # && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
@@ -106,7 +108,7 @@ RUN cd /tmp \
         # --config=mkl \
         -c opt \
         --local_resources ${LOCAL_RESOURCES} \
-        --config=v1 //tensorflow/tools/pip_package:build_pip_package
+        //tensorflow/tools/pip_package:build_pip_package
 
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
