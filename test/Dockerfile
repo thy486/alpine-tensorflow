@@ -110,8 +110,8 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
+# RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
 
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
-        && python3 -c 'import tensorflow'
+# RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
+#         && python3 -c 'import tensorflow'
