@@ -49,7 +49,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         && pip3 install keras_applications --no-deps \
         && pip3 install -U --user numpy \
         && pip3 install h5py==2.9.0 \
-        && pip3 install --no-cache-dir wheel \
+        && pip3 install --no-cache-dir setuptools wheel \
         # && pip3 install keras_preprocessing --no-deps \
         # && pip3 install h5py==2.8.0 \
         && $(cd /usr/bin && ln -s python3 python)
@@ -79,22 +79,31 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         # && sed -i -e '/JEMALLOC_HAVE_SECURE_GETENV/d' third_party/jemalloc.BUILD \
         # && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
         # && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/stacktrace_handler.cc \
-        && PYTHON_BIN_PATH=/usr/bin/python \
+        && : \
+        && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel\
+        && sed -n '478p' configure.py | grep 'bazel' | grep 'batch' &&  sed -i "478c \      \[\'bazel\', \'shutdown\', \'--bazelrc=/dev/null\', \'version\'\]\)" configure.py \
+        && PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
-        TF_NEED_JEMALLOC=1 \
-        TF_NEED_GCP=0 \
+        # TF_NEED_JEMALLOC=1 \
+        # TF_NEED_GCP=0 \
         TF_NEED_HDFS=0 \
         TF_NEED_S3=0 \
-        TF_ENABLE_XLA=0 \
         TF_NEED_GDR=0 \
-        TF_NEED_VERBS=0 \
-        TF_NEED_OPENCL=0 \
+        # TF_NEED_VERBS=0 \
+        # TF_NEED_OPENCL=0 \
+        TF_ENABLE_XLA=0 \
+        TF_NEED_OPENCL_SYCL=0 \
+        TF_NEED_ROCM=1 \
         TF_NEED_CUDA=0 \
+        TF_DOWNLOAD_CLANG=0 \
         TF_NEED_MPI=0 \
+        TF_SET_ANDROID_WORKSPACE=0 \
         bash configure
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-        && bazel build --config=mkl -c opt --local_resources ${LOCAL_RESOURCES} --verbose_failures --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" //tensorflow/tools/pip_package:build_pip_package
+        && bazel build \
+        # --config=mkl \
+        -c opt --local_resources ${LOCAL_RESOURCES} --verbose_failures //tensorflow/tools/pip_package:build_pip_package
 ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
