@@ -77,7 +77,8 @@ RUN cd /tmp \
 # Change Build args
 RUN RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazelv \
-        && sed -n '478p' configure.py | grep 'bazel' | grep 'batch' &&  sed -i "478c \      \[\'baze l\', \'shutdown\', \'--bazelrc=/dev/null\', \'version\'\]\)" configure.py
+        && sed -n '478p' configure.py | grep 'bazel' | grep 'batch' &&  sed -i "478c \      \[\'baze l\', \'shutdown\', \'--bazelrc=/dev/null\', \'version\'\]\)" configure.py \
+        && sed -i -e '/\/tensorflow\/core\/platform\/default\/stacktrace.h' ./tensorflow/core/platform/default/stacktrace.h
 
 # Build Tensorflow
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
