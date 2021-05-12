@@ -90,9 +90,9 @@ RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         CC_OPT_FLAGS="-march=native" \
         # TF_NEED_JEMALLOC=1 \
         # TF_NEED_GCP=0 \
-        TF_NEED_HDFS=0 \
-        TF_NEED_S3=0 \
-        TF_NEED_GDR=0 \
+        # TF_NEED_HDFS=0 \
+        # TF_NEED_S3=0 \
+        # TF_NEED_GDR=0 \
         # TF_NEED_VERBS=0 \
         # TF_NEED_OPENCL=0 \
         TF_ENABLE_XLA=0 \
