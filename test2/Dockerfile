@@ -1,5 +1,6 @@
 FROM redmancy/alpine-tensorflow:latest
-RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+RUN apk add libexecinfo libexecinfo-dev \
+    && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
     && PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
