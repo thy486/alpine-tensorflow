@@ -41,15 +41,16 @@ RUN apk add --no-cache --virtual=.build-deps \
         swig \
         sudo \
         zip \
-        libexecinfo libexecinfo-dev \
+        libexecinfo \
+        libexecinfo-dev \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
         && sudo python3 get-pip.py \
         && apk --no-cache add \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5 \
         && apk --no-cache add --virtual .builddeps.edge \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5-dev \
         && rm -rf /var/cache/apk/* \
         && pip3 install -U --user numpy \
