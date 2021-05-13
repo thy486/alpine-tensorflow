@@ -24,6 +24,7 @@ RUN cd /tmp \
         bash configure \
         && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && bazel build \
+        --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
         --verbose_failures \
         # --config=mkl \
         --config=noaws \
