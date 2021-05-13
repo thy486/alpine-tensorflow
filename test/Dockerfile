@@ -44,7 +44,7 @@ RUN apk add --no-cache --virtual=.build-deps \
         libexecinfo libexecinfo-dev \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-        && sudo python3 get-pip.py | rm -f get-pip.py \
+        && sudo python3 get-pip.py \
         && apk --no-cache add \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
         hdf5 \
