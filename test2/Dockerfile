@@ -15,6 +15,7 @@ RUN cd /tmp \
         # TF_NEED_OPENCL=0 \
         TF_ENABLE_XLA=0 \
         TF_NEED_OPENCL_SYCL=0 \
+        TF_NEED_S3=0 \
         TF_NEED_ROCM=0 \
         TF_NEED_CUDA=0 \
         TF_DOWNLOAD_CLANG=0 \
