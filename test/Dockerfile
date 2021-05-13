@@ -41,8 +41,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         swig \
         sudo \
         zip \
-        libexecinfo \
-        libexecinfo-dev \
+        # libexecinfo \
+        # libexecinfo-dev \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
         && sudo python3 get-pip.py \
