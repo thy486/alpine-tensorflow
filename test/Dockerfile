@@ -112,6 +112,9 @@ RUN cd /tmp \
         && bazel build \
         --verbose_failures \
         # --config=mkl \
+        --config=noaws \
+        --config=nogcp \
+        --config=nohdfs \
         -c opt \
         --local_resources ${LOCAL_RESOURCES} \
         //tensorflow/tools/pip_package:build_pip_package
