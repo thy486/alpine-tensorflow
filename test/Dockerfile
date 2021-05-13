@@ -6,10 +6,14 @@ FROM alpine:3.12
 # - Add -Xmx to the Java params when building Bazel
 # - Disable TF_GENERATE_BACKTRACE and TF_GENERATE_STACKTRACE
 
-ENV LOCAL_RESOURCES 2048,.5,1.0
-ENV JAVA_HOME /usr/lib/jvm/default-jvm
-ENV BAZEL_VERSION 0.25.0
-ENV TENSORFLOW_VERSION 1.15.5
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    LANG=zh_CN.UTF-8 \
+    SHELL=/bin/bash PS1="\u@\h:\w \$ " \
+    JAVA_HOME=/usr/lib/jvm/default-jvm \
+    BAZEL_VERSION=0.25.0 \
+    TENSORFLOW_VERSION=1.15.5 \
+    LOCAL_RESOURCES=2048,.5,1.0
+WORKDIR /root
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git
 RUN apk add --no-cache --virtual=.build-deps \
@@ -40,12 +44,12 @@ RUN apk add --no-cache --virtual=.build-deps \
         libexecinfo libexecinfo-dev \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-        && sudo python3 get-pip.py \
+        && sudo python3 get-pip.py | rm -f get-pip.py \
         && apk --no-cache add \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
         hdf5 \
         && apk --no-cache add --virtual .builddeps.edge \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
         hdf5-dev \
         && rm -rf /var/cache/apk/* \
         && pip3 install -U --user numpy \
@@ -110,7 +114,6 @@ RUN cd /tmp \
         --local_resources ${LOCAL_RESOURCES} \
         //tensorflow/tools/pip_package:build_pip_package
 
-ENV LOCAL_RESOURCES 7500,.5,1.0
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 # RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
