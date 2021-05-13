@@ -83,6 +83,7 @@ RUN cd /tmp \
         | tar xzf - \
         && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && : musl-libc does not have "secure_getenv" function \
+        && bazel clean \
         && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
         && sed -n '478p' configure.py | grep 'bazel' | grep 'batch' &&  sed -i "478c \      \[\'baze l\', \'shutdown\', \'--bazelrc=/dev/null\', \'version\'\]\)" configure.py \
         # && sed -i -e '/#include <execinfo.h>/d' tensorflow/core/platform/default/stacktrace.h \
