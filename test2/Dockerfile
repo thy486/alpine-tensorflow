@@ -8,7 +8,7 @@ RUN cd /tmp \
     # && sed -i 's/pthread_getname_np/pthread_setname_np/g' tensorflow/core/platform/posix/env.cc \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
     && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/default/stacktrace_handler.cc \
-    && sed "s/\"HAVE_MALLINFO\": 1,/\"HAVE_MALLINFO\": 0,/g" third_party/llvm/llvm.bzl \
+    && sed -i "s/\"HAVE_MALLINFO\": 1,/\"HAVE_MALLINFO\": 0,/g" third_party/llvm/llvm.bzl \
     && PYTHON_BIN_PATH=/usr/bin/python \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
