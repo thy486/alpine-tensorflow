@@ -1,8 +1,10 @@
 FROM redmancy/alpine-tensorflow:latest
-RUN apk add libexecinfo libexecinfo-dev \
-    && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+    # && apk add libexecinfo libexecinfo-dev \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
-    && sed -i 's/pthread_getname_np/pthread_setname_np/g' tensorflow/core/platform/posix/env.cc \
+    # && sed -i 's/pthread_getname_np/pthread_setname_np/g' tensorflow/core/platform/posix/env.cc \
+    && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
+    && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/default/stacktrace_handler.cc \
     && PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
