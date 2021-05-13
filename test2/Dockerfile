@@ -1,5 +1,6 @@
 FROM redmancy/alpine-tensorflow:latest
-RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+RUN apk add libexecinfo libexecinfo-dev \
+    &&cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     &&PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
