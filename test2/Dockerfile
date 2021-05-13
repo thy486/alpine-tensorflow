@@ -2,6 +2,7 @@ FROM redmancy/alpine-tensorflow:latest
 RUN apk add libexecinfo libexecinfo-dev \
     && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
+    && sed -i 's/pthread_getname_np/pthread_setname_np/g' tensorflow/core/platform/posix/env.cc \
     && PYTHON_BIN_PATH=/usr/bin/python3 \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
