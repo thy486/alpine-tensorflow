@@ -15,7 +15,7 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     EXTRA_BAZEL_ARGS=--host_javabase=@local_jdk//:jdk
 
 RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git \
-    rm -rf /var/cache/apk/* \
+    rm -rf /var/cache/apk/*
 RUN apk add --no-cache --virtual=.build-deps \
         bash \
         coreutils \
