@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM alpine:3.12
 
 # Based on https://github.com/tatsushid/docker-alpine-py3-tensorflow-jupyter/blob/master/Dockerfile
 # Changes:
@@ -14,8 +14,8 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     TENSORFLOW_VERSION=1.15.5 \
     EXTRA_BAZEL_ARGS=--host_javabase=@local_jdk//:jdk
 
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git
-RUN apk add --no-cache --virtual=.build-deps \
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git \
+    && apk add --no-cache --virtual=.build-deps \
         bash \
         coreutils \
         protobuf \
