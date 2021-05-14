@@ -78,9 +78,9 @@ RUN cd /tmp \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
     && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/default/stacktrace_handler.cc \
-    && sed -i "s#nullptr,                     /\* tp_print \*/#NULL,                     /\* tp_print \*/#g" tensorflow/python/lib/core/ndarray_tensor_bridge.cc \
-    && sed -i "s#nullptr,                                   // tp_print#NULL,                                   // tp_print#g" tensorflow/python/lib/core/bfloat16.cc \
-    && sed -i "s#nullptr,                                      /\* tp_print \*/#NULL,                                      /\* tp_print \*/#g" tensorflow/python/eager/pywrap_tfe_src.cc \
+    && sed -i "s#nullptr.*/\* tp_print \*/#NULL, /\* tp_print \*/#g" tensorflow/python/lib/core/ndarray_tensor_bridge.cc \
+    && sed -i "s#nullptr.*// tp_print#NULL, // tp_print#g" tensorflow/python/lib/core/bfloat16.cc \
+    && sed -i "s#nullptr.*/\* tp_print \*/#NULL, /\* tp_print \*/#g" tensorflow/python/eager/pywrap_tfe_src.cc \
     && sed -i -e '/HAVE_BACKTRACE/d' third_party/llvm/llvm.bzl \
     && sed -i -e '/HAVE_MALLINFO/d' third_party/llvm/llvm.bzl \
     && rm -f /tmp/env.cc \
