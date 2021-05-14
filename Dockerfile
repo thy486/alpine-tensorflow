@@ -13,10 +13,9 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     BAZEL_VERSION=0.25.0 \
     TENSORFLOW_VERSION=1.15.5 \
     EXTRA_BAZEL_ARGS=--host_javabase=@local_jdk//:jdk
-WORKDIR /root
 
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git
-RUN apk add --no-cache --virtual=.build-deps \
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git \
+ && apk add --no-cache --virtual=.build-deps \
         bash \
         coreutils \
         protobuf \
@@ -45,7 +44,6 @@ RUN apk add --no-cache --virtual=.build-deps \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
         && sudo python3 get-pip.py \
-        | rm -f /tmp/get-pip.py \
         && apk --no-cache add \
         --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
         hdf5 \
@@ -56,7 +54,8 @@ RUN apk add --no-cache --virtual=.build-deps \
         && pip3 install numpy==1.18.0 h5py==2.9.0 \
         && pip3 install -U --user keras_preprocessing keras_applications --no-deps \
         && pip3 install --no-cache-dir setuptools wheel \
-        && $(cd /usr/bin && ln -s python3 python)
+        && $(cd /usr/bin && ln -s python3 python) \
+        && rm -f /tmp/get-pip.py
 
 # Bazel download and install
 RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
@@ -68,17 +67,13 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
         && cp -p output/bazel /usr/local/bin/ \
         && cp -p output/bazel /usr/bin/
 
-# Download Tensorflow
-RUN cd /tmp \
-        && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
-        | tar xzf -
-
 # Download and Build Tensorflow
 RUN cd /tmp \
+    && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
+        | tar xzf - \
     && : musl-libc error \
     && curl https://raw.githubusercontent.com/thy486/alpine-tensorflow/master/fix/env.cc -o env.cc \
     && cp -rf env.cc /tmp/tensorflow-${TENSORFLOW_VERSION}/tensorflow/core/platform/posix/env.cc \
-    | rm -f env.cc \
     && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
@@ -88,6 +83,7 @@ RUN cd /tmp \
     && sed -i "s#nullptr,                                      /\* tp_print \*/#NULL,                                      /\* tp_print \*/#g" tensorflow/python/eager/pywrap_tfe_src.cc \
     && sed -i -e '/HAVE_BACKTRACE/d' third_party/llvm/llvm.bzl \
     && sed -i -e '/HAVE_MALLINFO/d' third_party/llvm/llvm.bzl \
+    && rm -f /tmp/env.cc \
     && PYTHON_BIN_PATH=/usr/bin/python \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
@@ -114,9 +110,8 @@ RUN cd /tmp \
         //tensorflow/tools/pip_package:build_pip_package
 
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
-        && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-RUN cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
-
+        && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
+        && cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root \
 # Make sure it's built properly
-RUN pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
+        && pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
         && python3 -c 'import tensorflow'
