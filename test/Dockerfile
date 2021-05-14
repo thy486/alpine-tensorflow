@@ -70,10 +70,10 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
         && cp -p output/bazel /usr/local/bin/ \
         && cp -p output/bazel /usr/bin/
 
-# # Download Tensorflow
-# RUN cd /tmp \
-#         && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
-#         | tar xzf -
+# Download Tensorflow
+RUN cd /tmp \
+        && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
+        | tar xzf -
 
 # # Download and Build Tensorflow
 # RUN cd /tmp \
