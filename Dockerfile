@@ -76,8 +76,6 @@ RUN cd /tmp \
     && cp -rf env.cc /tmp/tensorflow-${TENSORFLOW_VERSION}/tensorflow/core/platform/posix/env.cc \
     && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
-    && sed -i "s/\$(NM/\$\$NM/g" third_party/ngraph/tbb.BUILD \
-    && sed -i "s/\$(AR/\$\$AR/g" third_party/ngraph/tbb.BUILD \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
     && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/default/stacktrace_handler.cc \
     && sed -i "s#nullptr.*/\* tp_print \*/#NULL, /\* tp_print \*/#g" tensorflow/python/lib/core/ndarray_tensor_bridge.cc \
@@ -102,7 +100,6 @@ RUN cd /tmp \
         && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && bazel build --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
         # --config=mkl \
-        --config=ngraph \
         --config=noaws \
         --config=nogcp \
         --config=nohdfs \
