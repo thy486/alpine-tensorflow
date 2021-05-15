@@ -29,7 +29,7 @@ RUN cd /tmp \
         --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
         --verbose_failures \
         # --config=mkl \
-        --copt=-UMALLINFO \
+        --config=ngraph \
         --config=noaws \
         --config=nogcp \
         --config=nohdfs \
