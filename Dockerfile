@@ -88,7 +88,7 @@ RUN cd /tmp \
         PYTHON_LIB_PATH=/usr/lib/python3.8/site-packages \
         CC_OPT_FLAGS="-march=native" \
         TF_NEED_OPENCL=0 \
-        TF_ENABLE_XLA=0 \
+        TF_ENABLE_XLA=1 \
         TF_NEED_OPENCL_SYCL=0 \
         TF_NEED_S3=0 \
         TF_NEED_ROCM=0 \
