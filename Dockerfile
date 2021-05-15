@@ -100,6 +100,7 @@ RUN cd /tmp \
         && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && bazel build --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
         # --config=mkl \
+        --config=ngraph \
         --config=noaws \
         --config=nogcp \
         --config=nohdfs \
