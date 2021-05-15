@@ -3,6 +3,8 @@ RUN cd /tmp \
     && curl https://raw.githubusercontent.com/thy486/alpine-tensorflow/master/fix/env.cc -o env.cc \
     && cp -rf env.cc /tmp/tensorflow-${TENSORFLOW_VERSION}/tensorflow/core/platform/posix/env.cc \
     && cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+    && sed -i "s/\$(NM/\$\$NM/g" third_party/ngraph/tbb.BUILD \
+    && sed -i "s/\$(AR/\$\$AR/g" third_party/ngraph/tbb.BUILD \
     && sed -i -e '/undef HAVE_SYS_SYSCTL_H.*define HAVE_SYS_SYSCTL_H 1/d' third_party/hwloc/BUILD.bazel \
     && sed -i -e '/define TF_GENERATE_BACKTRACE/d' tensorflow/core/platform/default/stacktrace.h \
     && sed -i -e '/define TF_GENERATE_STACKTRACE/d' tensorflow/core/platform/default/stacktrace_handler.cc \
