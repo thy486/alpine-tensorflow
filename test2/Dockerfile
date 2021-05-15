@@ -38,4 +38,5 @@ RUN cd /tmp \
         # --config=noignite \
         -c opt \
         --local_resources ${LOCAL_RESOURCES} \
-        //tensorflow/tools/pip_package:build_pip_package
+        //tensorflow/tools/pip_package:build_pip_package \
+        && cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root
