@@ -45,18 +45,18 @@ RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype
         && pip3 install -U --user keras_preprocessing keras_applications --no-deps \
         && pip3 install --no-cache-dir setuptools wheel \
         && $(cd /usr/bin && ln -s python3 python) \
-        && rm -f /tmp/get-pip.py \
+        && rm -f /tmp/get-pip.py
 # Bazel download and install
-&& curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
+RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip \
         && mkdir bazel-${BAZEL_VERSION} \
         && unzip -qd bazel-${BAZEL_VERSION} bazel-${BAZEL_VERSION}-dist.zip \
         && cd bazel-${BAZEL_VERSION} \
         && sed -i -e 's/-classpath/-J-Xmx8192m -J-Xms128m -classpath/g' scripts/bootstrap/compile.sh \
         && bash compile.sh \
         && cp -p output/bazel /usr/local/bin/ \
-        && cp -p output/bazel /usr/bin/ \
+        && cp -p output/bazel /usr/bin/
 # Download and Build Tensorflow
-&& cd /tmp \
+RUN cd /tmp \
     && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf - \
     && : musl-libc error \
@@ -95,8 +95,8 @@ RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype
         # --config=nokafka \
         # --config=noignite \
         -c opt \
-        //tensorflow/tools/pip_package:build_pip_package \
-&& cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
+        //tensorflow/tools/pip_package:build_pip_package
+RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
         && mkdir -p /root/tensorflow_pkg \
         && cp -rf /tmp/tensorflow_pkg/* /root/tensorflow_pkg/
