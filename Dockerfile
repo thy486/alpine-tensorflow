@@ -14,9 +14,8 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     TENSORFLOW_VERSION=1.15.5 \
     EXTRA_BAZEL_ARGS=--host_javabase=@local_jdk//:jdk
 
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl freetype libpng libjpeg-turbo libstdc++ imagemagick graphviz git \
+RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git bash \
     && apk add --no-cache --virtual=.build-deps \
-        bash \
         coreutils \
         protobuf \
         cmake \
@@ -25,6 +24,8 @@ RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl 
         g++ \
         libjpeg-turbo-dev \
         libpng-dev \
+        libcurl \
+        libstdc++ \
         linux-headers \
         make \
         musl-dev \
@@ -41,16 +42,13 @@ RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py libcurl 
         sudo \
         zip \
         libexecinfo-dev \
+        && apk --no-cache add --virtual=.build-deps.hdf5 \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+        hdf5 hdf5-dev \
+        && rm -rf /var/cache/apk/* \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
         && sudo python3 get-pip.py \
-        && apk --no-cache add \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-        hdf5 \
-        && apk --no-cache add --virtual .builddeps.edge \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-        hdf5-dev \
-        && rm -rf /var/cache/apk/* \
         && pip3 install numpy==1.18.0 h5py==2.9.0 \
         && pip3 install -U --user keras_preprocessing keras_applications --no-deps \
         && pip3 install --no-cache-dir setuptools wheel \
@@ -111,7 +109,10 @@ RUN cd /tmp \
 
 RUN cd /tmp/tensorflow-${TENSORFLOW_VERSION} \
         && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg \
-        && cp /tmp/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl /root \
-# Make sure it's built properly
-        && pip3 install --no-cache-dir /root/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38m-linux_x86_64.whl \
-        && python3 -c 'import tensorflow'
+        && mkdir -p /root/tensorflow_pkg \
+        && cp -rf /tmp/tensorflow_pkg/* /root/tensorflow_pkg/ \
+        && apk del .build-deps .build-deps.hdf5 \
+        && rm -rf /tmp/* /root/.cache
+# # Make sure it's built properly
+#         && pip3 install --no-cache-dir /root/tensorflow_pkg/tensorflow-${TENSORFLOW_VERSION}-cp38-cp38-linux_x86_64.whl \
+#         && python3 -c 'import tensorflow'
