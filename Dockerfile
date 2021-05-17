@@ -1,5 +1,12 @@
 FROM alpine:3.12
 
+# Add Edge repos
+RUN echo -e "\n\
+@edgemain http://nl.alpinelinux.org/alpine/edge/main\n\
+@edgecomm http://nl.alpinelinux.org/alpine/edge/community\n\
+@edgetest http://nl.alpinelinux.org/alpine/edge/testing"\
+  >> /etc/apk/repositories
+
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     LANG=zh_CN.UTF-8 \
     SHELL=/bin/bash PS1="\u@\h:\w \$ " \
@@ -8,7 +15,7 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     TENSORFLOW_VERSION=1.15.5 \
     EXTRA_BAZEL_ARGS=--host_javabase=@local_jdk//:jdk
 
-RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git bash \
+RUN apk add --no-cache python3 python3-tkinter py3-numpy hdf5@edgetest py3-numpy-f2py freetype libpng libjpeg-turbo imagemagick graphviz git bash \
     && apk add --no-cache --virtual=.build-deps \
         coreutils \
         protobuf \
@@ -33,10 +40,8 @@ RUN apk add --no-cache python3 python3-tkinter py3-numpy py3-numpy-f2py freetype
         sed \
         swig \
         zip \
+        hdf5-dev@edgetest \
         libexecinfo-dev \
-        && apk --no-cache add --virtual=.build-deps.hdf5 \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-        hdf5 hdf5-dev \
         && rm -rf /var/cache/apk/* \
         && cd /tmp \
         && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
