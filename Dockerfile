@@ -61,6 +61,7 @@ RUN curl -SLO https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERS
         && cp -p output/bazel /usr/local/bin/ \
         && cp -p output/bazel /usr/bin/
 # Download and Build Tensorflow
+# 27285 total actions.In a 2.8G intel core and 4G memory , it will cost about one day. In 8 3.7G intel core , it will cost 4 hours. Github action will be timeout.
 RUN cd /tmp \
     && curl -SL https://github.com/tensorflow/tensorflow/archive/v${TENSORFLOW_VERSION}.tar.gz \
         | tar xzf - \
